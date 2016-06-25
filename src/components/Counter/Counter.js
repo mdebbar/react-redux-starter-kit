@@ -1,8 +1,14 @@
 import React from 'react'
 import classes from './Counter.scss'
+import { Link } from 'react-router'
 
 export const Counter = (props) => (
   <div>
+    <p>
+      You can ignore this counter and go directly to
+      {' '}
+      <Link to='/game'>the game</Link>
+    </p>
     <h2 className={classes.counterContainer}>
       Counter:
       {' '}

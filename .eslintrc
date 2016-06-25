@@ -20,6 +20,8 @@
   "rules": {
     "semi" : [2, "never"],
     "max-len": [2, 120, 2],
+    "comma-dangle": [1, "always-multiline"],
+    "space-before-function-paren": [2, "never"],
     "generator-star-spacing": 0,
     "babel/generator-star-spacing": 1
   }
