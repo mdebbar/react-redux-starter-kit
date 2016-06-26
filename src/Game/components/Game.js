@@ -3,10 +3,11 @@ import classes from './Game.scss'
 import Controls from './Controls'
 import Board from './Board'
 import BallComponent from './Ball'
-import Ball from '../../game/Ball'
+import Ball from '../classes/Ball'
+import Collisions from '../classes/Collisions'
 import { randomInt } from '../../util/math'
 import { getPosition } from '../../util/dom'
-import { BoardShape, BallShape } from '../shapes'
+import { BoardShape, BallShape } from './shapes'
 
 export default class Game extends Component {
   static propTypes = {
@@ -23,13 +24,16 @@ export default class Game extends Component {
 
   render() {
     const { board, balls } = this.props
+    const enableMovement = !!this.getSelectedBall()
     return (
       <div className={classes.container}>
-        <Controls onMove={this.onMove} />
+        <Controls enabled={enableMovement} onMove={this.onMove} />
         <Board board={board} onClick={this.boardClick}>
           {balls.map(this.renderBall, this)}
         </Board>
-        <p><i><small>To add a ball, click anywhere inside the playing area.</small></i></p>
+        <p><i><small>
+          To add a ball, click anywhere inside the playing area.
+        </small></i></p>
       </div>
     )
   }
@@ -70,10 +74,10 @@ export default class Game extends Component {
     }
   }
 
-  onMove = (direction) => {
+  onMove = (movement) => {
     const selectedBall = this.getSelectedBall()
-    if (selectedBall) {
-      this.props.updateBall(selectedBall.move(direction))
-    }
+    const others = this.props.balls.filter(ball => ball !== selectedBall)
+    const collisions = new Collisions(others)
+    this.props.updateBall(collisions.safeMove(selectedBall, movement))
   }
 }

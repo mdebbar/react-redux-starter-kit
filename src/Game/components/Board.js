@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import classes from './Game.scss'
-import { BoardShape } from '../shapes'
+import { BoardShape } from './shapes'
 
 export const Board = ({ board, children, ...props }) => (
   <div {...props}

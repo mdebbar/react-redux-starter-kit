@@ -1,6 +1,6 @@
 import React from 'react'
 import classes from './Game.scss'
-import { BallShape } from '../shapes'
+import { BallShape } from './shapes'
 
 function getBallStyles(ball) {
   return {
@@ -18,6 +18,7 @@ export const Ball = ({ ball, ...props }) => (
       ball.selected ? classes.selected : '',
     ].join(' ')}
     style={getBallStyles(ball)}
+    data-id={ball.id}
   />
 )
 
