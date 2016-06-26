@@ -1,17 +1,19 @@
 import { connect } from 'react-redux'
-import { addObject, moveObject, removeObject } from '../modules/game'
+import { setBoardSize } from '../modules/board'
+import { addBall, updateBall, removeBall } from '../modules/balls'
 
 import Game from 'components/Game'
 
 const mapActionCreators = {
-  addObject,
-  moveObject,
-  removeObject,
+  setBoardSize,
+  addBall,
+  updateBall,
+  removeBall,
 }
 
 const mapStateToProps = (state) => ({
-  board: state.game.board,
-  objects: state.game.objects,
+  board: state.board,
+  balls: state.balls,
 })
 
 export default connect(mapStateToProps, mapActionCreators)(Game)

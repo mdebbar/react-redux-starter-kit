@@ -1,6 +1,6 @@
 import { Component, PropTypes } from 'react'
 
-export default class GameControls extends Component {
+export default class Controls extends Component {
   static propTypes = {
     onMove: PropTypes.func.isRequired,
   }

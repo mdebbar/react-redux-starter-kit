@@ -5,9 +5,11 @@ export default (store) => ({
   getComponent(nextState, cb) {
     require.ensure([], (require) => {
       const Game = require('./containers/GameContainer').default
-      const reducer = require('./modules/game').default
+      const boardReducer = require('./modules/board').default
+      const ballsReducer = require('./modules/balls').default
 
-      injectReducer(store, { key: 'game', reducer })
+      injectReducer(store, { key: 'board', reducer: boardReducer })
+      injectReducer(store, { key: 'balls', reducer: ballsReducer })
 
       cb(null, Game)
 

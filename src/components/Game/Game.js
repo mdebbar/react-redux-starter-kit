@@ -1,57 +1,79 @@
 import React, { Component, PropTypes } from 'react'
 import classes from './Game.scss'
-import GameControls from './GameControls'
-import GameBoard from './GameBoard'
-import GameObject from './GameObject'
-import Circle from '../../game/Circle'
+import Controls from './Controls'
+import Board from './Board'
+import BallComponent from './Ball'
+import Ball from '../../game/Ball'
+import { randomInt } from '../../util/math'
+import { getPosition } from '../../util/dom'
+import { BoardShape, BallShape } from '../shapes'
 
 export default class Game extends Component {
   static propTypes = {
-    board: PropTypes.shape({
-      width: PropTypes.number.isRequired,
-      height: PropTypes.number.isRequired,
-    }).isRequired,
-    objects: PropTypes.array.isRequired,
-    addObject: PropTypes.func.isRequired,
-    moveObject: PropTypes.func.isRequired,
-    removeObject: PropTypes.func.isRequired,
+    board: BoardShape.isRequired,
+    balls: PropTypes.arrayOf(BallShape).isRequired,
+    addBall: PropTypes.func.isRequired,
+    updateBall: PropTypes.func.isRequired,
+    removeBall: PropTypes.func.isRequired,
+  }
+
+  getSelectedBall() {
+    return this.props.balls.find(ball => ball.selected)
   }
 
   render() {
-    const { board, objects, removeObject } = this.props
+    const { board, balls } = this.props
     return (
-      <div className={classes.gameContainer}>
-        <GameControls onMove={this.onMove} />
-        <GameBoard className={classes.gameBoard} width={board.width} height={board.height}>
-          {objects.map(this.renderObject, this)}
-        </GameBoard>
-        <button className='btn btn-default' onClick={this.addRandomObject}>
-          + New Object
-        </button>
+      <div className={classes.container}>
+        <Controls onMove={this.onMove} />
+        <Board board={board} onClick={this.boardClick}>
+          {balls.map(this.renderBall, this)}
+        </Board>
+        <p><i><small>To add a ball, click anywhere inside the playing area.</small></i></p>
       </div>
     )
   }
 
-  renderObject(obj) {
-    const onClick = () => this.props.removeObject(obj)
+  renderBall(ball) {
+    const onClick = (event) => {
+      event.stopPropagation()
+      this.ballClick(ball)
+    }
     return (
-      <GameObject
-        key={obj.id}
-        object={obj}
+      <BallComponent
+        key={ball.id}
+        ball={ball}
         onClick={onClick}
       />
     )
   }
 
-  onMove = (direction) => {
-    const { objects, moveObject } = this.props
-    if (objects.length > 0) {
-      moveObject(objects[0], direction)
+  boardClick = (event) => {
+    const boardPosition = getPosition(event.target)
+    const center = {
+      x: event.clientX - boardPosition.x,
+      y: event.clientY - boardPosition.y,
+    }
+    const radius = randomInt(10, 25)
+    this.props.addBall(new Ball({ center, radius }))
+  }
+
+  ballClick = (ball) => {
+    const selectedBall = this.getSelectedBall()
+    // First, unselect the currently selected ball.
+    if (selectedBall) {
+      this.props.updateBall(selectedBall.select(false))
+    }
+    // Then, select the clicked ball if it wasn't already selected.
+    if (ball !== selectedBall) {
+      this.props.updateBall(ball.select(true))
     }
   }
 
-  addRandomObject = () => {
-    const { board, addObject } = this.props
-    addObject(Circle.randomWithin(board.width, board.height))
+  onMove = (direction) => {
+    const selectedBall = this.getSelectedBall()
+    if (selectedBall) {
+      this.props.updateBall(selectedBall.move(direction))
+    }
   }
 }
