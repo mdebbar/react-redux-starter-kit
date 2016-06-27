@@ -3,13 +3,17 @@ $light-gray: #d6dbe2;
 $blue: #477dca;
 $green: #49d003;
 
-.container {
-
+input.frictionRange {
+  display: inline-block;
+  margin: 1em auto;
+  vertical-align: middle;
+  width: 200px;
 }
 
 .board {
   background-color: $white;
   border: 3px solid $light-gray;
+  box-sizing: content-box;
   margin: 0 auto;
   position: relative;
 }
@@ -20,7 +24,6 @@ $green: #49d003;
   border-radius: 50%;
   cursor: pointer;
   position: absolute;
-  transition: top 0.25s, bottom 0.25s, right 0.25s, left 0.25s;
 
   &:hover {
     background-color: lighten($blue, 10%);
@@ -29,6 +32,7 @@ $green: #49d003;
   &.selected {
     background-color: $green;
     border-color: darken($green, 3%);
+    z-index: 1;
 
     &:hover {
       background-color: lighten($green, 10%);

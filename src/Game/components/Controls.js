@@ -1,5 +1,5 @@
 import { Component, PropTypes } from 'react'
-import Movement from '../classes/Movement'
+import Direction from '../classes/Direction'
 
 const keyCodeToDirection = {
   ArrowUp: 'up',
@@ -40,7 +40,7 @@ export default class Controls extends Component {
     const direction = keyCodeToDirection[event.code]
     if (direction) {
       event.preventDefault()
-      this.props.onMove(Movement.fromDirection(direction))
+      this.props.onMove(Direction.fromString(direction))
     }
   }
 

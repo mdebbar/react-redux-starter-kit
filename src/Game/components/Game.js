@@ -1,13 +1,14 @@
 import React, { Component, PropTypes } from 'react'
-import classes from './Game.scss'
+
+import Universe from './Universe'
 import Controls from './Controls'
 import Board from './Board'
 import BallComponent from './Ball'
-import Ball from '../classes/Ball'
-import Collisions from '../classes/Collisions'
-import { randomInt } from '../../util/math'
-import { getPosition } from '../../util/dom'
+import FrictionRange from './FrictionRange'
 import { BoardShape, BallShape } from './shapes'
+
+import Ball from '../classes/Ball'
+import { randomInt } from '../../util/math'
 
 export default class Game extends Component {
   static propTypes = {
@@ -16,6 +17,7 @@ export default class Game extends Component {
     addBall: PropTypes.func.isRequired,
     updateBall: PropTypes.func.isRequired,
     removeBall: PropTypes.func.isRequired,
+    updateFriction: PropTypes.func.isRequired,
   }
 
   getSelectedBall() {
@@ -23,18 +25,22 @@ export default class Game extends Component {
   }
 
   render() {
-    const { board, balls } = this.props
-    const enableMovement = !!this.getSelectedBall()
+    const { board, balls, updateBall, updateFriction } = this.props
     return (
-      <div className={classes.container}>
-        <Controls enabled={enableMovement} onMove={this.onMove} />
-        <Board board={board} onClick={this.boardClick}>
+      <Universe
+        board={board}
+        balls={balls}
+        selectedBall={this.getSelectedBall()}
+        controls={Controls}
+        updateBall={updateBall}>
+        <FrictionRange friction={board.friction} updateFriction={updateFriction} />
+        <Board board={board} onClick={this.newBall}>
           {balls.map(this.renderBall, this)}
         </Board>
         <p><i><small>
           To add a ball, click anywhere inside the playing area.
         </small></i></p>
-      </div>
+      </Universe>
     )
   }
 
@@ -52,12 +58,7 @@ export default class Game extends Component {
     )
   }
 
-  boardClick = (event) => {
-    const boardPosition = getPosition(event.target)
-    const center = {
-      x: event.clientX - boardPosition.x,
-      y: event.clientY - boardPosition.y,
-    }
+  newBall = (center) => {
     const radius = randomInt(10, 25)
     this.props.addBall(new Ball({ center, radius }))
   }
@@ -66,18 +67,11 @@ export default class Game extends Component {
     const selectedBall = this.getSelectedBall()
     // First, unselect the currently selected ball.
     if (selectedBall) {
-      this.props.updateBall(selectedBall.select(false))
+      this.props.updateBall(selectedBall.update({ selected: false }))
     }
     // Then, select the clicked ball if it wasn't already selected.
     if (ball !== selectedBall) {
-      this.props.updateBall(ball.select(true))
+      this.props.updateBall(ball.update({ selected: true }))
     }
-  }
-
-  onMove = (movement) => {
-    const selectedBall = this.getSelectedBall()
-    const others = this.props.balls.filter(ball => ball !== selectedBall)
-    const collisions = new Collisions(others)
-    this.props.updateBall(collisions.safeMove(selectedBall, movement))
   }
 }

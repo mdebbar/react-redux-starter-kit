@@ -1,28 +1,24 @@
 import { distance } from '../../util/math'
 
 export default class Collisions {
-  constructor(balls) {
+  constructor(boundaries, balls) {
     this.balls = balls
+    this.boundaries = boundaries
   }
 
   isColliding(ball) {
-    return this.balls.some(this._collide.bind(this, ball))
+    return this._outOfBoundaries(ball) ||
+           this.balls.some(this._collide.bind(this, ball))
   }
 
-  safeMove(ball, movement) {
-    // If ball is already colliding, move it further until it's not colliding.
-    const delta = this.isColliding(ball) ? 1 : -1
-    while (!this._isSafeMove(ball, movement)) {
-      movement = movement.setStep(movement.step + delta)
-    }
-    return ball.move(movement)
-  }
-
-  _isSafeMove(ball, movement) {
-    return !this.isColliding(ball.move(movement))
+  _outOfBoundaries(ball) {
+    return ball.center.x - ball.radius < 0 ||
+           ball.center.y - ball.radius < 0 ||
+           ball.center.x + ball.radius >= this.boundaries.width ||
+           ball.center.y + ball.radius >= this.boundaries.height
   }
 
   _collide(b1, b2) {
-    return distance(b1.center, b2.center) < b1.radius + b2.radius - 1
+    return distance(b1.center, b2.center) <= b1.radius + b2.radius
   }
 }

@@ -13,8 +13,8 @@ export const createRoutes = (store) => ({
   indexRoute: Home,
   childRoutes: [
     CounterRoute(store),
-    GameRoute(store)
-  ]
+    GameRoute(store),
+  ],
 })
 
 /*  Note: childRoutes can be chunked or otherwise loaded programmatically

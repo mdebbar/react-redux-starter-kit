@@ -1,10 +1,11 @@
 import { connect } from 'react-redux'
-import { setBoardSize } from './reducers/board'
+import { updateFriction, setBoardSize } from './reducers/board'
 import { addBall, updateBall, removeBall } from './reducers/balls'
 
 import Game from './components/Game'
 
 const mapActionCreators = {
+  updateFriction,
   setBoardSize,
   addBall,
   updateBall,

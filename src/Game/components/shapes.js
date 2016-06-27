@@ -5,14 +5,17 @@ export const Point = PropTypes.shape({
   y: PropTypes.number.isRequired,
 })
 
-export const Dimensions = PropTypes.shape({
+export const BallShape = PropTypes.shape({
+  id: PropTypes.number.isRequired,
+  selected: PropTypes.bool.isRequired,
+  center: Point.isRequired,
+  radius: PropTypes.number.isRequired,
+  speed: PropTypes.number.isRequired,
+  direction: PropTypes.object,
+})
+
+export const BoardShape = PropTypes.shape({
+  friction: PropTypes.number.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 })
-
-export const BallShape = PropTypes.shape({
-  center: Point.isRequired,
-  radius: PropTypes.number.isRequired,
-})
-
-export const BoardShape = Dimensions

@@ -1,11 +1,19 @@
 // ------------------------------------
 // Constants
 // ------------------------------------
+export const UPDATE_FRICTION = 'UPDATE_FRICTION'
 export const SET_BOARD_SIZE = 'SET_BOARD_SIZE'
 
 // ------------------------------------
 // Actions
 // ------------------------------------
+export function updateFriction(friction) {
+  return {
+    type: UPDATE_FRICTION,
+    payload: friction,
+  }
+}
+
 export function setBoardSize({ width, height }) {
   return {
     type: SET_BOARD_SIZE,
@@ -14,6 +22,7 @@ export function setBoardSize({ width, height }) {
 }
 
 export const actions = {
+  updateFriction,
   setBoardSize,
 }
 
@@ -21,6 +30,13 @@ export const actions = {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
+  [UPDATE_FRICTION]: (state, action) => {
+    return {
+      ...state,
+      friction: action.payload,
+    }
+  },
+
   [SET_BOARD_SIZE]: (state, action) => {
     return {
       ...state,
@@ -32,7 +48,7 @@ const ACTION_HANDLERS = {
 // ------------------------------------
 // Reducer
 // ------------------------------------
-const initialState = { width: 500, height: 250 }
+const initialState = { friction: 0.2, width: 500, height: 250 }
 export default function boardReducer(state = initialState, action) {
   const handler = ACTION_HANDLERS[action.type]
 
