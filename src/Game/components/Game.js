@@ -5,6 +5,7 @@ import Controls from './Controls'
 import Board from './Board'
 import BallComponent from './Ball'
 import FrictionRange from './FrictionRange'
+import Hints from './Hints'
 import { BoardShape, BallShape } from './shapes'
 
 import Ball from '../classes/Ball'
@@ -38,7 +39,7 @@ export default class Game extends Component {
           {balls.map(this.renderBall, this)}
         </Board>
         <p><i><small>
-          To add a ball, click anywhere inside the playing area.
+          <Hints balls={balls} board={board} />
         </small></i></p>
       </Universe>
     )
@@ -49,11 +50,17 @@ export default class Game extends Component {
       event.stopPropagation()
       this.ballClick(ball)
     }
+    // Right-click
+    const onContextMenu = (event) => {
+      event.preventDefault()
+      this.props.removeBall(ball)
+    }
     return (
       <BallComponent
         key={ball.id}
         ball={ball}
         onClick={onClick}
+        onContextMenu={onContextMenu}
       />
     )
   }

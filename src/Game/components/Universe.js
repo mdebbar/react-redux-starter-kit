@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import Collisions from '../classes/Collisions'
+import Direction from '../classes/Direction'
 import { BallShape, BoardShape } from './shapes'
 
 const SPEED_THROSHOLD = 20
@@ -61,35 +62,58 @@ export default class Universe extends Component {
   moveBall(ball) {
     const { updateBall } = this.props
 
-    // Try to move the ball if it doesn't cause collision.
-    var newBall = ball.move()
-    if (this.isColliding(newBall)) {
-      return updateBall(ball.update({ speed: 0 }))
+    // If the ball is already collided, don't move it!
+    if (this.getCollider(ball)) {
+      return
     }
 
-    // Decelerate the ball based on current friction of the universe.
+    // Move the ball, handle any collisions and decelerate based on current friction of universe.
     const { friction } = this.props.board
-    newBall = newBall.accelerate(1 - friction)
-    updateBall(newBall)
+    const movedBall = this.moveAndHandleCollision(ball).accelerate(1 - friction)
+    updateBall(movedBall)
 
+    // Schedule the next movement of the ball
+    this.scheduleNextMove(movedBall)
+  }
+
+  // Move the ball and update direction if a collision occurs.
+  // Also start moving the collider.
+  moveAndHandleCollision(ball) {
+    const movedBall = ball.move()
+    const collider = this.getCollider(movedBall)
+    if (collider) {
+      const direction = Direction.fromAngle(collider.angle)
+      if (collider.ball) {
+        this.startMovingBall(collider.ball, direction, ball.speed)
+      }
+      return ball.update({ direction: direction.invert() })
+    }
+    return movedBall
+  }
+
+  scheduleNextMove(ball) {
     // Clear any previously scheduled movements for this ball.
     if (this.timers[ball.id]) {
       clearTimeout(this.timers[ball.id])
     }
 
-    if (newBall.speed > SPEED_THROSHOLD) {
+    if (ball.speed > SPEED_THROSHOLD) {
       // Schedule the next movement based on the ball's speed.
-      const timeout = 1000 / newBall.speed
+      const timeout = 1000 / ball.speed
       this.timers[ball.id] = setTimeout(() => {
-        this.moveBall(newBall)
+        // The list of balls might have changed.. get the most up to date ball.
+        const upToDateBall = this.props.balls.find(b => b.id === ball.id)
+        if (upToDateBall) {
+          this.moveBall(upToDateBall)
+        }
       }, timeout)
     }
   }
 
-  isColliding(ball) {
+  getCollider(ball) {
     const { balls, board } = this.props
     const others = balls.filter(b => b.id !== ball.id)
     const collisions = new Collisions(board, others)
-    return collisions.isColliding(ball)
+    return collisions.getCollider(ball)
   }
 }

@@ -13,8 +13,22 @@ export default class Direction {
     throw new Error(`Unknown direction: "${direction}"`)
   }
 
+  static fromAngle(angle) {
+    return new Direction({
+      x: Math.cos(angle),
+      y: Math.sin(angle),
+    })
+  }
+
   constructor(shift) {
     this.shift = this._normalizeShift(shift)
+  }
+
+  invert() {
+    return new Direction({
+      x: -this.shift.x,
+      y: -this.shift.y,
+    })
   }
 
   apply(point) {
@@ -22,6 +36,10 @@ export default class Direction {
       x: point.x + this.shift.x,
       y: point.y + this.shift.y,
     }
+  }
+
+  toAngle() {
+    return Math.atan2(this.shift.y, this.shift.x)
   }
 
   _normalizeShift(shift) {

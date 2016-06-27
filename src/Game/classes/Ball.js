@@ -2,7 +2,7 @@ var seqId = 0
 
 export default class Ball {
   constructor(options) {
-    this.update({
+    this._update({
       ...options,
       id: options.id || ++seqId,
       selected: options.selected || false,
@@ -12,7 +12,7 @@ export default class Ball {
 
   move() {
     const center = this.direction.apply(this.center)
-    return new Ball(this).update({ center })
+    return this.update({ center })
   }
 
   accelerate(factor) {
@@ -20,9 +20,10 @@ export default class Ball {
   }
 
   update(attributes) {
-    Object.keys(attributes).forEach(key => {
-      this[key] = attributes[key]
-    })
-    return this
+    return new Ball(this)._update(attributes)
+  }
+
+  _update(attributes) {
+    return Object.assign(this, attributes)
   }
 }
